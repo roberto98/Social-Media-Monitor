@@ -166,10 +166,13 @@ class LDA:
         """
         unseen_corpus = [unseen_document]
         inferred_topics = self.inference(unseen_corpus)
-        return inferred_topics
+        formatted_topics = [(topic_idx, np.round(prob, 9)) for topic_idx, prob in inferred_topics[0]]
+
+        return formatted_topics
 
     """
     # Perform inference on a new, unseen corpus using Variational inference
+    # https://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf
     import scipy.special as sp
     def inference(self, unseen_corpus):
         inferred_topics = []
@@ -199,6 +202,7 @@ class LDA:
     def inference(self, unseen_corpus):
         """
         Perform inference on a new, unseen corpus using Gibbs sampling.
+        https://coli-saar.github.io/cl19/materials/darling-lda.pdf
 
         Parameters:
         - unseen_corpus (list of lists): The unseen corpus of documents, where each document is represented as a list of (word, count) tuples.
@@ -222,7 +226,8 @@ class LDA:
                 topic_word_counts[topic][word] += count
                 topic_counts[topic] += count
 
-        for it in tqdm(range(self.num_iterations), desc="Gibbs Sampling"):
+        for _ in range(self.num_iterations):
+        #for it in tqdm(range(100), desc="Gibbs Sampling"):
             for doc_idx, doc in enumerate(unseen_corpus):
                 for word_idx, (word, count) in enumerate(doc):
                     old_topic = topic_assignments[doc_idx][word_idx]
@@ -247,7 +252,8 @@ class LDA:
 
         # Compute the topic distribution for each document
         for doc_idx, doc in enumerate(unseen_corpus):
-            topic_distribution = (doc_topic_counts[doc_idx, :] + self.alpha) / (np.sum(doc_topic_counts[doc_idx, :]) + self.num_topics * self.alpha)
-            inferred_topics.append(list(enumerate(topic_distribution)))
-
+            topic_distribution = (doc_topic_counts[doc_idx, :] + self.alpha) / (np.sum(doc_topic_counts[doc_idx, :]) + self.num_topics * self.alpha)            
+            formatted_distribution = [(topic_idx, np.round(prob, 9)) for topic_idx, prob in enumerate(topic_distribution)]
+            inferred_topics.append(formatted_distribution)
+    
         return inferred_topics
