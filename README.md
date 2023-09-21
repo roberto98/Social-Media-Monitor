@@ -28,7 +28,7 @@ A detailed report and a presentation on this project can be found here:
 
 
 
-## How to Run
+## ⚙ How to Run
 To run the Social_Media_Tool.ipynb file, follow these steps:
 
 1. Download the Social_Media_Tool.ipynb file from the provided link.
